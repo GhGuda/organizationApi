@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-d(m*^&6fl$kh=qvnayw-=s)cont792how1)pk-8qtm8qw1c34f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     'rest_framework',
     'knox',
     'users',
@@ -51,7 +51,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'knox.auth.TokenAuthentication',
     ],
-
 }
 
 MIDDLEWARE = [
@@ -85,26 +84,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'user_auth.wsgi.application'
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('NAME'),
-#         'USER': config('USER'),
-#         'PASSWORD': config('PASSWORD'),
-#         'HOST': config('HOST'),
-#         'PORT': int(config('PORT')),
-#         "OPTIONS": {"sslmode": "require"},
-#     }
-# }
-
-
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('NAME'),
+        'USER': config('USER'),
+        'PASSWORD': config('PASSWORD'),
+        'HOST': config('HOST'),
+        'PORT': '21561',
+        "OPTIONS": {"sslmode": "require"},
     }
 }
+
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 
@@ -146,10 +145,25 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
+STATIC_URL = '/assets/'
+
+# MEDIA_URL = '/media/'
+
+if DEBUG:
+
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'rest_framework')]
+
+else:
+
+    STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
+
+STATIC_URL = '/assets/'
+STATICFILES_DIRS = os.path.join(BASE_DIR / 'assets'),
+STATIC_ROOT = os.path.join(BASE_DIR, 'assets/rest_framework')
 
 
-STATIC_URL = "assets/"
-STATIC_ROOT = os.path.join(BASE_DIR, "assets")
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR,  'media')
 
 
 # Default primary key field type
