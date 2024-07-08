@@ -1,17 +1,17 @@
-import psycopg2
-from decouple import config
+# import psycopg2
+# from decouple import config
 
-def main():
-    conn = psycopg2.connect(config("AIVEN_PASSWORD"))
+# def main():
+#     conn = psycopg2.connect(config("AIVEN_PASSWORD"))
 
-    query_sql = 'SELECT VERSION()'
+#     query_sql = 'SELECT VERSION()'
 
-    cur = conn.cursor()
-    cur.execute(query_sql)
+#     cur = conn.cursor()
+#     cur.execute(query_sql)
 
-    version = cur.fetchone()[0]
-    print(version)
+#     version = cur.fetchone()[0]
+#     print(version)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
