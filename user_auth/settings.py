@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from decouple import config
 import os
+import dj_database_url
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -85,15 +88,11 @@ WSGI_APPLICATION = 'user_auth.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('NAME'),
-        'USER': config('USER'),
-        'PASSWORD': config('PASSWORD'),
-        'HOST': config('HOST'),
-        'PORT': '21561',
-        "OPTIONS": {"sslmode": "require"},
-    }
+    'default': dj_database_url.config(
+        default= "postgresql://ghgudaapi_user:w44fgX6oVlpFDnwgfd2dQ2fd8OyNCEsH@dpg-cq61usbv2p9s73ceanh0-a.oregon-postgres.render.com/ghgudaapi", # add your own db url here. nah rush de do me ooo 
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 
