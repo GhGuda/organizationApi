@@ -44,17 +44,30 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'knox',
+    'rest_framework_simplejwt',
     'users',
     'organisations',
+    
 ]
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'knox.auth.TokenAuthentication',
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+    
 }
+
+
+SIMPLE_JWT = {
+    "USER_ID_FIELD": "userId",
+    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.CustomObtainTokenSerializer",
+}
+
+
+
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

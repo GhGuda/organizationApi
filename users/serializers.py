@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User
 from organisations.models import Organisation
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,3 +22,27 @@ class RegisterSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+
+
+class CustomObtainTokenSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        refresh = self.get_token(self.user)
+        accessToken = str(refresh.access_token)
+        user = UserSerializer(instance=self.user)
+        
+        data ={
+            "accessToken": accessToken,
+            "user": {
+                "userId": user.userId,
+                "firstName": user.firstName,
+				"lastName": user.lastName,
+				"email": user.email,
+				"phone": user.phone,
+            }
+        }
+        
+        return data            
+      
+      

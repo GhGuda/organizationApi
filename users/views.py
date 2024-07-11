@@ -1,49 +1,65 @@
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
-from knox.models import AuthToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+)
+from rest_framework.exceptions import ValidationError
 
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
             user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            accessToken = str(refresh.access_token)
             return Response({
                 "status": "success",
                 "message": "Registration successful",
                 "data": {
-                    "accessToken": AuthToken.objects.create(user)[1],
+                    "accessToken": accessToken,
                     "user": UserSerializer(user).data
                 }
             }, status=status.HTTP_201_CREATED)
-        return Response({
-            "errors": serializer.errors
-        }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            
+        except ValidationError as error:
+            return Response({
+                "errors": error.detail
+            }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        
+        except:
+            return Response(
+                {
+                    "status": "Bad request",
+                    "message": "Registration unsuccessful",
+                    "statusCode": 400
+                }, status=status.HTTP_400_BAD_REQUEST
 
-class LoginAPI(generics.GenericAPIView):
-    serializer_class = LoginSerializer
+            )
+
+class LoginAPI(TokenObtainPairView):
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            user = User.objects.filter(email=serializer.data['email']).first()
-            if user and user.check_password(serializer.data['password']):
-                return Response({
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response({
                     "status": "success",
                     "message": "Login successful",
-                    "data": {
-                        "accessToken": AuthToken.objects.create(user)[1],
-                        "user": UserSerializer(user).data
-                    }
+                    "data": serializer.validated_data
                 }, status=status.HTTP_200_OK)
-        return Response({
-            "status": "Bad request",
-            "message": "Authentication failed",
-            "statusCode": 401
-        }, status=status.HTTP_401_UNAUTHORIZED)
+        except:
+            return Response({
+                "status": "Bad request",
+                "message": "Authentication failed",
+                "statusCode": 401
+            }, status=status.HTTP_401_UNAUTHORIZED)
+            
 
 
 
